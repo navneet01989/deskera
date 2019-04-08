@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 
@@ -12,7 +11,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.sampledemo.fragments.ItemsFragment;
 import com.sampledemo.fragments.ProfileFragment;
 
-public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
+
+public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     private FrameLayout main_content;
 
@@ -24,9 +24,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         main_content = findViewById(R.id.main_content);
         bottom_navigation.setOnNavigationItemSelectedListener(this);
         bottom_navigation.setSelectedItemId(R.id.action_profile);
-
     }
-
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {

@@ -5,4 +5,8 @@
     <string name="favorites">Favorites</string>
     <string name="table">Table</string>
     <string name="setting">Settings</string>
+    <string name="hint_email">E-mail</string>
+    <string name="hint_hobby">Hobby</string>
+    <string name="hint_do_joining">Date of joining</string>
+
 </resources>
