@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">SampleDemo</string>
+    <string name="profile">Profile</string>
+    <string name="items">Items</string>
+    <string name="favorites">Favorites</string>
+    <string name="table">Table</string>
+    <string name="setting">Settings</string>
+</resources>
