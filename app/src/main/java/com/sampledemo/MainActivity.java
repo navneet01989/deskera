@@ -9,7 +9,7 @@ import android.widget.FrameLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.sampledemo.fragments.ItemsFragment;
-import com.sampledemo.fragments.ProfileFragment;
+import com.sampledemo.profile.ProfileFragment;
 
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
