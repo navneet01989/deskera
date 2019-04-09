@@ -8,7 +8,7 @@ import android.view.MenuItem;
 import android.widget.FrameLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.sampledemo.fragments.ItemsFragment;
+import com.sampledemo.items.ItemsFragment;
 import com.sampledemo.profile.ProfileFragment;
 
 

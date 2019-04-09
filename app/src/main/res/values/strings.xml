@@ -9,9 +9,13 @@
     <string name="hint_hobby">Hobby</string>
     <string name="hint_do_joining">Date of joining</string>
     <string name="camera_msg">We need to access your phone\'s camera and storage to take picture</string>
+    <string name="gallery_msg">We need to access your phone\'s storage to take picture</string>
     <string name="allow">Allow</string>
     <string name="deny">Deny</string>
     <string name="camera">Camera</string>
     <string name="gallery">Gallery</string>
     <string name="please_choose">Please choose:</string>
+    <string name="all">All</string>
+    <string name="category_a">Category A</string>
+    <string name="category_b">Category B</string>
 </resources>

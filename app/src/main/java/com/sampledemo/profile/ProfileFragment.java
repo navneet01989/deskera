@@ -45,6 +45,7 @@ import androidx.fragment.app.Fragment;
 
 public class ProfileFragment extends Fragment implements ProfilePresenter.View {
     private final int PERMISSION_REQUEST_CODE_CAMERA = 303, CAMERA_REQUEST_CODE = 403;
+    private final int PERMISSION_REQUEST_CODE_GALLERY = 503, GALLERY_REQUEST_CODE = 603;
     private Context context;
     private String cameraFilePath;
     private ProfilePresenter mProfilePresenter;
@@ -181,6 +182,7 @@ public class ProfileFragment extends Fragment implements ProfilePresenter.View {
                             mProfilePresenter.cameraPermissionAsk();
                             break;
                         case 1:
+                            mProfilePresenter.galleryPermissionAsk();
                             break;
                     }
                 }
@@ -196,11 +198,22 @@ public class ProfileFragment extends Fragment implements ProfilePresenter.View {
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
                     && ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 mProfilePresenter.captureFromCamera();
-            } else if ((ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED ||
-                    ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED)
-                    && getActivity() != null) {
-
-                ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE_CAMERA);
+            } else {
+                boolean cameraAllowed = true;
+                if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Manifest.permission.CAMERA, false)
+                        && !shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+                    cameraAllowed = false;
+                }
+                boolean writeAllowed = true;
+                if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Manifest.permission.WRITE_EXTERNAL_STORAGE, false)
+                        && !shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    writeAllowed = false;
+                }
+                if(!cameraAllowed && !writeAllowed) {
+                    mProfilePresenter.showRationale(getString(R.string.camera_msg));
+                    return;
+                }
+                requestPermissions(new String[] {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE_CAMERA);
             }
         } else {
             mProfilePresenter.captureFromCamera();
@@ -208,17 +221,41 @@ public class ProfileFragment extends Fragment implements ProfilePresenter.View {
     }
 
     @Override
+    public void galleryPermissionAsk() {
+        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            if(ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                mProfilePresenter.getFromGallery();
+            } else {
+                boolean writeAllowed = true;
+                if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Manifest.permission.WRITE_EXTERNAL_STORAGE, false)
+                        && !shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    writeAllowed = false;
+                }
+                if(!writeAllowed) {
+                    mProfilePresenter.showRationale(getString(R.string.gallery_msg));
+                    return;
+                }
+                requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE_GALLERY);
+            }
+        } else {
+            mProfilePresenter.getFromGallery();
+        }
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode == PERMISSION_REQUEST_CODE_CAMERA) {
+            PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(Manifest.permission.CAMERA, true).apply();
+            PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(Manifest.permission.WRITE_EXTERNAL_STORAGE, true).apply();
             if((grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) ||
                     (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 mProfilePresenter.captureFromCamera();
-            } else if(grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_DENIED && grantResults[1] == PackageManager.PERMISSION_DENIED) {
-                PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(permissions[0], true).apply();
-                PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(permissions[1], true).apply();
-            } else if((grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_DENIED)) {
-                PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(permissions[0], true).apply();
+            }
+        } else if(requestCode == PERMISSION_REQUEST_CODE_GALLERY) {
+            PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(Manifest.permission.WRITE_EXTERNAL_STORAGE, true).apply();
+            if(grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                mProfilePresenter.getFromGallery();
             }
         }
     }
@@ -235,6 +272,12 @@ public class ProfileFragment extends Fragment implements ProfilePresenter.View {
     }
 
     @Override
+    public void getFromGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, GALLERY_REQUEST_CODE);
+    }
+
+    @Override
     public void setAvatarImage() {
         avatar.setImageURI(Uri.parse(cameraFilePath));
     }
@@ -243,6 +286,9 @@ public class ProfileFragment extends Fragment implements ProfilePresenter.View {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == Activity.RESULT_OK && CAMERA_REQUEST_CODE == requestCode) {
+            mProfilePresenter.setAvatarImage();
+        } else if(resultCode == Activity.RESULT_OK && GALLERY_REQUEST_CODE == requestCode && data !=null && data.getData() != null){
+            cameraFilePath = data.getData().toString();
             mProfilePresenter.setAvatarImage();
         }
     }
@@ -259,25 +305,6 @@ public class ProfileFragment extends Fragment implements ProfilePresenter.View {
                 Uri uri = Uri.fromParts("package", context.getPackageName(), null);
                 intent.setData(uri);
                 context.startActivity(intent);
-//                if(getActivity() != null) {
-//                    if(!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) && !shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-//                        ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE_CAMERA);
-//                    } else if(!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)
-//                            && PreferenceManager.getDefaultSharedPreferences(context).getBoolean("isCameraFirstTime", true)) {
-//                        PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean("isCameraFirstTime", false).apply();
-//                        ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.CAMERA}, PERMISSION_REQUEST_CODE_CAMERA);
-//                    } else if(!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-//                            && PreferenceManager.getDefaultSharedPreferences(context).getBoolean("isStorageFirstTime", true)) {
-//                        PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean("isStorageFirstTime", false).apply();
-//                        ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE_CAMERA);
-//                    } else {
-//                        Intent intent = new Intent();
-//                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-//                        Uri uri = Uri.fromParts("package", context.getPackageName(), null);
-//                        intent.setData(uri);
-//                        context.startActivity(intent);
-//                    }
-//                }
 
             }
         });
@@ -296,6 +323,7 @@ public class ProfileFragment extends Fragment implements ProfilePresenter.View {
         File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Camera");
         File image = File.createTempFile(imageFileName,".jpg", storageDir);
         cameraFilePath = "file://" + image.getAbsolutePath();
+
         return image;
     }
 }

@@ -29,11 +29,17 @@ class ProfilePresenter {
     void cameraPermissionAsk() {
         view.cameraPermissionAsk();
     }
+    void galleryPermissionAsk() {
+        view.galleryPermissionAsk();
+    }
     void showRationale(String msg) {
         view.showRationale(msg);
     }
     void captureFromCamera() {
         view.captureFromCamera();
+    }
+    void getFromGallery() {
+        view.getFromGallery();
     }
     void setAvatarImage() {
         view.setAvatarImage();
@@ -47,8 +53,10 @@ class ProfilePresenter {
         void setTextForJoin();
         void showChoiceDialog();
         void cameraPermissionAsk();
+        void galleryPermissionAsk();
         void showRationale(String msg);
         void captureFromCamera();
+        void getFromGallery();
         void setAvatarImage();
     }
 }
