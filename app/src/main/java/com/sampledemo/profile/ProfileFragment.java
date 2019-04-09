@@ -199,10 +199,7 @@ public class ProfileFragment extends Fragment implements ProfilePresenter.View {
             } else if ((ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED ||
                     ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED)
                     && getActivity() != null) {
-                if(!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) || !shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    mProfilePresenter.showRationale(getString(R.string.camera_msg));
-                    return;
-                }
+
                 ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE_CAMERA);
             }
         } else {
@@ -217,6 +214,11 @@ public class ProfileFragment extends Fragment implements ProfilePresenter.View {
             if((grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) ||
                     (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 mProfilePresenter.captureFromCamera();
+            } else if(grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_DENIED && grantResults[1] == PackageManager.PERMISSION_DENIED) {
+                PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(permissions[0], true).apply();
+                PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(permissions[1], true).apply();
+            } else if((grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_DENIED)) {
+                PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(permissions[0], true).apply();
             }
         }
     }
@@ -252,29 +254,30 @@ public class ProfileFragment extends Fragment implements ProfilePresenter.View {
         builderAlert.setPositiveButton(getString(R.string.allow), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                if(getActivity() != null) {
-                    if((!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) && !shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) 
-                            && PreferenceManager.getDefaultSharedPreferences(context).getBoolean("isCameraFirstTime", true) 
-                            && PreferenceManager.getDefaultSharedPreferences(context).getBoolean("isStorageFirstTime", true)) {
-                        PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean("isCameraFirstTime", false).apply();
-                        PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean("isStorageFirstTime", false).apply();
-                        ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE_CAMERA);
-                    } else if(!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)
-                            && PreferenceManager.getDefaultSharedPreferences(context).getBoolean("isCameraFirstTime", true)) {
-                        PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean("isCameraFirstTime", false).apply();
-                        ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.CAMERA}, PERMISSION_REQUEST_CODE_CAMERA);
-                    } else if(!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                            && PreferenceManager.getDefaultSharedPreferences(context).getBoolean("isStorageFirstTime", true)) {
-                        PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean("isStorageFirstTime", false).apply();
-                        ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE_CAMERA);
-                    } else {
-                        Intent intent = new Intent();
-                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        Uri uri = Uri.fromParts("package", context.getPackageName(), null);
-                        intent.setData(uri);
-                        context.startActivity(intent);
-                    }
-                }
+                Intent intent = new Intent();
+                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", context.getPackageName(), null);
+                intent.setData(uri);
+                context.startActivity(intent);
+//                if(getActivity() != null) {
+//                    if(!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) && !shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+//                        ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE_CAMERA);
+//                    } else if(!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)
+//                            && PreferenceManager.getDefaultSharedPreferences(context).getBoolean("isCameraFirstTime", true)) {
+//                        PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean("isCameraFirstTime", false).apply();
+//                        ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.CAMERA}, PERMISSION_REQUEST_CODE_CAMERA);
+//                    } else if(!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//                            && PreferenceManager.getDefaultSharedPreferences(context).getBoolean("isStorageFirstTime", true)) {
+//                        PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean("isStorageFirstTime", false).apply();
+//                        ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE_CAMERA);
+//                    } else {
+//                        Intent intent = new Intent();
+//                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+//                        Uri uri = Uri.fromParts("package", context.getPackageName(), null);
+//                        intent.setData(uri);
+//                        context.startActivity(intent);
+//                    }
+//                }
 
             }
         });
