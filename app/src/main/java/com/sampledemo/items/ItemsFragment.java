@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 
 import com.google.android.material.tabs.TabLayout;
 import com.sampledemo.R;
-import com.sampledemo.adapters.ItemsAdapter;
+import com.sampledemo.adapters.ItemsPagerAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,7 +22,7 @@ public class ItemsFragment extends Fragment {
         TabLayout tabLayout = rootView.findViewById(R.id.tabs);
         ViewPager viewPager = rootView.findViewById(R.id.viewpager);
         tabLayout.setupWithViewPager(viewPager);
-        viewPager.setAdapter(new ItemsAdapter(getChildFragmentManager(), getContext()));
+        viewPager.setAdapter(new ItemsPagerAdapter(getChildFragmentManager(), getContext()));
         return rootView;
     }
 }

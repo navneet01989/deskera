@@ -11,9 +11,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
-public class ItemsAdapter extends FragmentStatePagerAdapter {
-    Context context;
-    public ItemsAdapter(@NonNull FragmentManager fm, Context context) {
+public class ItemsPagerAdapter extends FragmentStatePagerAdapter {
+    private Context context;
+    public ItemsPagerAdapter(@NonNull FragmentManager fm, Context context) {
         super(fm);
         this.context = context;
     }
