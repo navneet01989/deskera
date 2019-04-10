@@ -21,6 +21,7 @@ public class ItemsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.items_fragment, container, false);
         TabLayout tabLayout = rootView.findViewById(R.id.tabs);
         ViewPager viewPager = rootView.findViewById(R.id.viewpager);
+        viewPager.setOffscreenPageLimit(0);
         tabLayout.setupWithViewPager(viewPager);
         viewPager.setAdapter(new ItemsPagerAdapter(getChildFragmentManager(), getContext()));
         return rootView;
