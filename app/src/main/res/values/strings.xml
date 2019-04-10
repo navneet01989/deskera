@@ -18,4 +18,9 @@
     <string name="all">All</string>
     <string name="category_a">Category A</string>
     <string name="category_b">Category B</string>
+    <string name="tables">Tables</string>
+    <string name="edit">Edit</string>
+    <string name="done">Done</string>
+    <string name="search">Search</string>
+    <string name="selected">%1d Selected</string>
 </resources>

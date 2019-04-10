@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinatorLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary">
+            <TextView
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:text="@string/edit"
+                android:layout_gravity="start|center_vertical"
+                android:id="@+id/toolbar_edit"
+                android:textColor="@android:color/white"
+                android:gravity="start"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tables"
+                android:layout_gravity="center"
+                android:id="@+id/toolbar_title"
+                android:textAppearance="@android:style/TextAppearance.Large"
+                android:textColor="@android:color/white"/>
+            <ImageView
+                android:id="@+id/imgAdd"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:contentDescription="@null"
+                app:srcCompat="@drawable/ic_baseline_add_24px"
+                android:layout_gravity="end|center_vertical"
+                android:tint="@android:color/white"
+                android:padding="8dp"/>
+        </androidx.appcompat.widget.Toolbar>
+        <EditText
+            android:id="@+id/edtSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/search"
+            android:inputType="text"
+            app:layout_anchor="@id/recyclerView"
+            app:layout_anchorGravity="top"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+</LinearLayout>

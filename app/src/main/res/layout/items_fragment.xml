@@ -25,7 +25,9 @@
                     android:layout_height="wrap_content"
                     android:text="@string/items"
                     android:layout_gravity="center"
-                    android:id="@+id/toolbar_title" />
+                    android:id="@+id/toolbar_title"
+                    android:textAppearance="@android:style/TextAppearance.Large"
+                    android:textColor="@android:color/white"/>
             </androidx.appcompat.widget.Toolbar>
 
             <com.google.android.material.tabs.TabLayout
