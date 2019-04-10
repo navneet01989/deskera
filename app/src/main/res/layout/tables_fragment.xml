@@ -50,7 +50,7 @@
             android:paddingLeft="15dp"
             android:paddingEnd="15dp"
             android:paddingRight="15dp"
-            tools:ignore="Autofill" />
+            tools:ignore="AutoFill" />
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"

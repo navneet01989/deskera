@@ -2,9 +2,12 @@ package com.sampledemo.tables;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -63,15 +66,21 @@ public class TablesFragment extends Fragment implements TablesPresenter.View {
         imgAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(edtSearch.getWindowToken(), 0);
                 Table table = new Table();
                 table.setName(getAlphaNumericString());
                 list.add(table);
+                tablesRecyclerAdapter.customNotifyDataSetChanged(list);
                 linearLayoutManager.scrollToPosition(list.size()-1);
             }
         });
         toolbar_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(edtSearch.getWindowToken(), 0);
+                edtSearch.setText("");
                 tablesRecyclerAdapter.shouldEdit(isEditing = !isEditing);
                 if(isEditing) {
                     edtSearch.setVisibility(View.GONE);
@@ -96,10 +105,21 @@ public class TablesFragment extends Fragment implements TablesPresenter.View {
                         list.remove(i);
                     }
                 }
-                tablesRecyclerAdapter.notifyDataSetChanged();
-                toolbar_edit.callOnClick();
+                tablesRecyclerAdapter.customNotifyDataSetChanged(list);
+                selectedItemCount = 0;
+                toolbar_title.setText(getString(R.string.selected, selectedItemCount));
                 btnDelete.setVisibility(View.GONE);
             }
+        });
+        edtSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                tablesRecyclerAdapter.getFilter().filter(charSequence.toString());
+            }
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+            @Override
+            public void afterTextChanged(Editable editable) { }
         });
         return rootView;
     }
