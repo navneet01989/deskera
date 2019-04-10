@@ -12,6 +12,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.sampledemo.favorite.FavoriteFragment;
 import com.sampledemo.items.ItemsFragment;
 import com.sampledemo.profile.ProfileFragment;
+import com.sampledemo.settings.SettingsFragment;
 import com.sampledemo.tables.TablesFragment;
 
 
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
                 getSupportFragmentManager().beginTransaction().replace(main_content.getId(), TablesFragment.newInstance(), "TablesFragment").commitAllowingStateLoss();
                 break;
             case R.id.action_setting:
-                getSupportFragmentManager().beginTransaction().replace(main_content.getId(), new ProfileFragment(), "ProfileFragment").commitAllowingStateLoss();
+                getSupportFragmentManager().beginTransaction().replace(main_content.getId(), SettingsFragment.newInstance(), "SettingsFragment").commitAllowingStateLoss();
                 break;
         }
         return true;

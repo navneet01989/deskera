@@ -24,4 +24,14 @@
     <string name="search">Search</string>
     <string name="selected">%1d Selected</string>
     <string name="delete">Delete</string>
+    <string name="temperature_display_units">Temperature Display Units</string>
+    <string name="farenheit">Fahrenheit</string>
+    <string name="celsius">Celsius</string>
+    <string name="sound">Sound</string>
+    <string name="notifications">Notifications</string>
+    <string name="date_probation_ends">Date probation ends</string>
+    <string name="view_details">View Details</string>
+    <string name="temperature">Temperature</string>
+    <string name="back">Back</string>
+    <string name="username">UserName</string>
 </resources>
