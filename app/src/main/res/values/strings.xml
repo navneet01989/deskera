@@ -23,4 +23,5 @@
     <string name="done">Done</string>
     <string name="search">Search</string>
     <string name="selected">%1d Selected</string>
+    <string name="delete">Delete</string>
 </resources>

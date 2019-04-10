@@ -21,9 +21,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class TablesRecyclerAdapter extends RecyclerView.Adapter<TablesRecyclerAdapter.ViewHolder> {
     private List<Table> list;
-    private TablesPresenter.OnItemClick listener;
+    private TablesPresenter.View listener;
     private boolean isEditing = false;
-    public TablesRecyclerAdapter(List<Table> list, TablesPresenter.OnItemClick listener) {
+    public TablesRecyclerAdapter(List<Table> list, TablesPresenter.View listener) {
         this.list = list;
         this.listener = listener;
     }

@@ -1,15 +1,18 @@
 package com.sampledemo.tables;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sampledemo.MainActivityPresenter;
 import com.sampledemo.R;
 import com.sampledemo.adapters.TablesRecyclerAdapter;
 import com.sampledemo.models.Table;
@@ -28,10 +31,16 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class TablesFragment extends Fragment implements TablesPresenter.OnItemClick {
+public class TablesFragment extends Fragment implements TablesPresenter.View {
     private boolean isEditing = false;
     private int selectedItemCount = 0;
     private TextView toolbar_title;
+    private Button btnDelete;
+    private MainActivityPresenter.View listener;
+    public static Fragment newInstance() {
+        return new TablesFragment();
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -39,6 +48,7 @@ public class TablesFragment extends Fragment implements TablesPresenter.OnItemCl
         final ImageView imgAdd = rootView.findViewById(R.id.imgAdd);
         final TextView toolbar_edit = rootView.findViewById(R.id.toolbar_edit);
         toolbar_title = rootView.findViewById(R.id.toolbar_title);
+        btnDelete = rootView.findViewById(R.id.btnDelete);
         final EditText edtSearch = rootView.findViewById(R.id.edtSearch);
         final RecyclerView recyclerView = rootView.findViewById(R.id.recyclerView);
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
@@ -68,16 +78,40 @@ public class TablesFragment extends Fragment implements TablesPresenter.OnItemCl
                     imgAdd.setVisibility(View.GONE);
                     toolbar_edit.setText(getString(R.string.done));
                     toolbar_title.setText(getString(R.string.selected, selectedItemCount));
+                    listener.toggleBottomView(false);
                 } else {
                     toolbar_edit.setText(getString(R.string.edit));
                     edtSearch.setVisibility(View.VISIBLE);
                     imgAdd.setVisibility(View.VISIBLE);
                     toolbar_title.setText(getString(R.string.tables));
+                    listener.toggleBottomView(true);
                 }
+            }
+        });
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                for(int i=list.size()-1;i>=0;i--) {
+                    if(list.get(i).isSelected()) {
+                        list.remove(i);
+                    }
+                }
+                tablesRecyclerAdapter.notifyDataSetChanged();
+                toolbar_edit.callOnClick();
+                btnDelete.setVisibility(View.GONE);
             }
         });
         return rootView;
     }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if(context instanceof MainActivityPresenter.View) {
+            listener = (MainActivityPresenter.View) context;
+        }
+    }
+
     private Comparator<Table> mapComparator = new Comparator<Table>() {
         public int compare(Table m1, Table m2) {
             return m1.getName().compareTo(m2.getName());
@@ -127,6 +161,11 @@ public class TablesFragment extends Fragment implements TablesPresenter.OnItemCl
             selectedItemCount++;
         } else {
             selectedItemCount--;
+        }
+        if(isEditing && selectedItemCount > 0) {
+            btnDelete.setVisibility(View.VISIBLE);
+        } else {
+            btnDelete.setVisibility(View.GONE);
         }
         toolbar_title.setText(getString(R.string.selected, selectedItemCount));
     }

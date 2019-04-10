@@ -19,6 +19,10 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class FavoriteFragment extends Fragment {
+    public static Fragment newInstance() {
+        return new FavoriteFragment();
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

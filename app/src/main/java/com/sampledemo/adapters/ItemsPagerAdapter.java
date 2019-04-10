@@ -1,6 +1,7 @@
 package com.sampledemo.adapters;
 
 import android.content.Context;
+import android.os.Parcelable;
 
 import com.sampledemo.R;
 import com.sampledemo.item.ItemFragment;
@@ -41,5 +42,11 @@ public class ItemsPagerAdapter extends FragmentStatePagerAdapter {
                 return context.getString(R.string.category_b);
         }
         return super.getPageTitle(position);
+    }
+
+    @Nullable
+    @Override
+    public Parcelable saveState() {
+        return null;
     }
 }

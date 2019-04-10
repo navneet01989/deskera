@@ -53,6 +53,11 @@ public class ProfileFragment extends Fragment implements ProfilePresenter.View {
     private EditText input_hobby;
     private EditText input_do_joining;
     private CircularImageView avatar;
+
+    public static Fragment newInstance() {
+        return new ProfileFragment();
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -323,7 +328,6 @@ public class ProfileFragment extends Fragment implements ProfilePresenter.View {
         File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Camera");
         File image = File.createTempFile(imageFileName,".jpg", storageDir);
         cameraFilePath = "file://" + image.getAbsolutePath();
-
         return image;
     }
 }

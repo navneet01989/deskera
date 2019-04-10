@@ -1,7 +1,7 @@
 package com.sampledemo.tables;
 
 public class TablesPresenter {
-    public interface OnItemClick {
+    public interface View {
         void onClick(boolean value);
     }
 }
