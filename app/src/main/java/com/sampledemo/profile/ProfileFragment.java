@@ -2,6 +2,7 @@ package com.sampledemo.profile;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,13 +14,17 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 
 import com.google.android.material.appbar.AppBarLayout;
@@ -31,12 +36,14 @@ import com.sampledemo.R;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
@@ -48,12 +55,13 @@ public class ProfileFragment extends Fragment implements ProfilePresenter.View {
     private final int PERMISSION_REQUEST_CODE_GALLERY = 503, GALLERY_REQUEST_CODE = 603;
     private Context context;
     private String cameraFilePath;
+    private Calendar myCalendar = Calendar.getInstance();
     private ProfilePresenter mProfilePresenter;
     private EditText input_email;
     private EditText input_hobby;
     private EditText input_do_joining;
     private CircularImageView avatar;
-
+    private Toolbar toolbar;
     public static Fragment newInstance() {
         return new ProfileFragment();
     }
@@ -66,13 +74,16 @@ public class ProfileFragment extends Fragment implements ProfilePresenter.View {
         input_email = rootView.findViewById(R.id.input_email);
         input_hobby = rootView.findViewById(R.id.input_hobby);
         input_do_joining = rootView.findViewById(R.id.input_do_joining);
+        Button btnDateSelection = rootView.findViewById(R.id.btnDateSelection);
         avatar = rootView.findViewById(R.id.avatar);
+        toolbar = rootView.findViewById(R.id.toolbar);
         final int imgWidth = avatar.getLayoutParams().width;
         final int imgHeight = avatar.getLayoutParams().height;
         mProfilePresenter = new ProfilePresenter(this);
         mProfilePresenter.setTextForEmail();
         mProfilePresenter.setTextForHobby();
         mProfilePresenter.setTextForJoin();
+        mProfilePresenter.setTextForUsername();
         appBarLayout.addOnOffsetChangedListener(new AppBarLayout.BaseOnOffsetChangedListener() {
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
@@ -92,6 +103,19 @@ public class ProfileFragment extends Fragment implements ProfilePresenter.View {
             @Override
             public void afterTextChanged(Editable editable) { }
         });
+        input_email.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(!b && !isValidEmail(input_email.getText())) {
+                    mProfilePresenter.updateKeyValueForEmail("");
+                    AlertDialog.Builder alert = new AlertDialog.Builder(context);
+                    alert.setTitle("Email is invalid");
+                    alert.setNeutralButton("OK", null);
+                    alert.setCancelable(true);
+                    alert.show();
+                }
+            }
+        });
         input_hobby.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
@@ -103,16 +127,13 @@ public class ProfileFragment extends Fragment implements ProfilePresenter.View {
             @Override
             public void afterTextChanged(Editable editable) { }
         });
-        input_do_joining.addTextChangedListener(new TextWatcher() {
+        btnDateSelection.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                mProfilePresenter.updateKeyValueForJoin(charSequence.toString());
+            public void onClick(View view) {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(context, date, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH));
+                datePickerDialog.getDatePicker().setMaxDate(new Date().getTime());
+                datePickerDialog.show();
             }
-            @Override
-            public void afterTextChanged(Editable editable) { }
         });
         avatar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,6 +168,16 @@ public class ProfileFragment extends Fragment implements ProfilePresenter.View {
     public void updateValueInSharedPreferenceForJoin(String value) {
         if(context != null) {
             PreferenceManager.getDefaultSharedPreferences(context).edit().putString("input_do_joining", value).apply();
+        }
+    }
+
+    @Override
+    public void setTextForUsername() {
+        if(context != null) {
+            String email = PreferenceManager.getDefaultSharedPreferences(context).getString("input_email", "");
+            if(email.split("@").length > 0) {
+                toolbar.setTitle(email.split("@")[0]);
+            }
         }
     }
 
@@ -329,5 +360,20 @@ public class ProfileFragment extends Fragment implements ProfilePresenter.View {
         File image = File.createTempFile(imageFileName,".jpg", storageDir);
         cameraFilePath = "file://" + image.getAbsolutePath();
         return image;
+    }
+    DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+            myCalendar.set(Calendar.YEAR, year);
+            myCalendar.set(Calendar.MONTH, monthOfYear);
+            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            String myFormat = "dd/MM/yyyy"; //In which you need put here
+            SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.getDefault());
+            mProfilePresenter.updateKeyValueForJoin(sdf.format(myCalendar.getTime()));
+            mProfilePresenter.setTextForJoin();
+        }
+    };
+    private boolean isValidEmail(CharSequence target) {
+        return (!TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target).matches());
     }
 }

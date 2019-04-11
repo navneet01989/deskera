@@ -17,9 +17,19 @@ public class ViewDetailsActivity extends AppCompatActivity {
         TextView txtTemperatureUnit = findViewById(R.id.txtTemperatureUnit);
         TextView txtSound = findViewById(R.id.txtSound);
         TextView txtNotifications = findViewById(R.id.txtNotifications);
+        TextView txtUsername = findViewById(R.id.txtUsername);
+        TextView txtEmail = findViewById(R.id.txtEmail);
+        TextView txtDoJ = findViewById(R.id.txtDoJ);
+
         txtTemperatureUnit.setText(PreferenceManager.getDefaultSharedPreferences(this).getString("TemperatureUnit", getString(R.string.farenheit)));
         txtSound.setText(String.valueOf(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("sound", true)));
         txtNotifications.setText(String.valueOf(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("notification", true)));
+        String email = PreferenceManager.getDefaultSharedPreferences(this).getString("input_email", "");
+        if(email.split("@").length > 0) {
+            txtUsername.setText(email.split("@")[0]);
+        }
+        txtEmail.setText(email);
+        txtDoJ.setText(PreferenceManager.getDefaultSharedPreferences(this).getString("input_do_joining", ""));
         toolbar_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

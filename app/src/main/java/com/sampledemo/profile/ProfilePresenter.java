@@ -28,6 +28,10 @@ class ProfilePresenter {
     }
     void cameraPermissionAsk() {
         view.cameraPermissionAsk();
+
+    }
+    void setTextForUsername() {
+        view.setTextForUsername();
     }
     void galleryPermissionAsk() {
         view.galleryPermissionAsk();
@@ -48,6 +52,7 @@ class ProfilePresenter {
         void updateValueInSharedPreferenceForEmail(String value);
         void updateValueInSharedPreferenceForHobby(String value);
         void updateValueInSharedPreferenceForJoin(String value);
+        void setTextForUsername();
         void setTextForEmail();
         void setTextForHobby();
         void setTextForJoin();
