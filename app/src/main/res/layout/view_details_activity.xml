@@ -180,6 +180,7 @@
             android:layout_marginLeft="15dp"
             android:textColor="@android:color/black"/>
         <TextView
+            android:id="@+id/txtPEnds"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -202,6 +203,7 @@
             android:layout_marginLeft="15dp"
             android:textColor="@android:color/black"/>
         <TextView
+            android:id="@+id/txtPDuration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -224,6 +226,7 @@
             android:layout_marginLeft="15dp"
             android:textColor="@android:color/black"/>
         <TextView
+            android:id="@+id/txtDateBecomePerm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -246,6 +249,7 @@
             android:layout_marginLeft="15dp"
             android:textColor="@android:color/black"/>
         <TextView
+            android:text="@string/more_than_6_months"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"

@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sampledemo.R;
+import com.sampledemo.favorite.FavoriteRecyclerAdapterPresenter;
 import com.sampledemo.models.Item;
 
 import androidx.annotation.NonNull;
@@ -15,9 +16,11 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class FavoriteRecyclerAdapter extends RecyclerView.Adapter<FavoriteRecyclerAdapter.ViewHolder> {
-    RealmResults<Item> data;
-    public FavoriteRecyclerAdapter(RealmResults<Item> data) {
+    private RealmResults<Item> data;
+    private FavoriteRecyclerAdapterPresenter.View view;
+    public FavoriteRecyclerAdapter(RealmResults<Item> data, FavoriteRecyclerAdapterPresenter.View view) {
         this.data = data;
+        this.view = view;
     }
 
     @NonNull
@@ -48,6 +51,7 @@ public class FavoriteRecyclerAdapter extends RecyclerView.Adapter<FavoriteRecycl
                 realm.insertOrUpdate(item);
                 realm.commitTransaction();
                 notifyDataSetChanged();
+                FavoriteRecyclerAdapter.this.view.refreshFragment();
             }
         });
     }

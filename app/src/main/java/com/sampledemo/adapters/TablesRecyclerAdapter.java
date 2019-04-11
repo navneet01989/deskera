@@ -59,7 +59,7 @@ public class TablesRecyclerAdapter extends RecyclerView.Adapter<TablesRecyclerAd
                     notifyItemChanged(position);
                     listener.onClick(list.get(position).isSelected());
                 } else {
-
+                    listener.gotoTableDetails(position);
                 }
             }
         });

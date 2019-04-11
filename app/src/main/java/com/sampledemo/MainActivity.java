@@ -2,6 +2,7 @@ package com.sampledemo;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -20,13 +21,14 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
 
     private FrameLayout main_content;
     private BottomNavigationView bottom_navigation;
-
+    MainActivityPresenter mainActivityPresenter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bottom_navigation = findViewById(R.id.bottom_navigation);
         main_content = findViewById(R.id.main_content);
+        mainActivityPresenter = new MainActivityPresenter(this);
         bottom_navigation.setOnNavigationItemSelectedListener(this);
         bottom_navigation.setSelectedItemId(R.id.action_profile);
     }
@@ -56,9 +58,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
     @Override
     public void toggleBottomView(boolean show) {
         if(show) {
-            bottom_navigation.setVisibility(View.VISIBLE);
+            mainActivityPresenter.setBottomNavigationVisibility(View.VISIBLE);
         } else {
-            bottom_navigation.setVisibility(View.GONE);
+            mainActivityPresenter.setBottomNavigationVisibility(View.GONE);
         }
+    }
+    @Override
+    public void setBottomNavigationVisibility(int visibility) {
+        bottom_navigation.setVisibility(visibility);
     }
 }

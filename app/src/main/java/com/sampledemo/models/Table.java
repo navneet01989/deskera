@@ -1,6 +1,8 @@
 package com.sampledemo.models;
 
-public class Table {
+import java.io.Serializable;
+
+public class Table implements Serializable {
     private String name;
     private boolean isSelected;
 

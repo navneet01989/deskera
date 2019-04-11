@@ -1,8 +1,11 @@
 package com.sampledemo.tables;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,15 +20,14 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sampledemo.MainActivityPresenter;
 import com.sampledemo.R;
+import com.sampledemo.TablesDetailsActivity;
 import com.sampledemo.adapters.TablesRecyclerAdapter;
 import com.sampledemo.models.Table;
 
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,10 +42,12 @@ public class TablesFragment extends Fragment implements TablesPresenter.View {
     private TextView toolbar_title;
     private Button btnDelete;
     private MainActivityPresenter.View listener;
+    private final int REQUEST_CODE_EDIT = 232;
     public static Fragment newInstance() {
         return new TablesFragment();
     }
-
+    private List<Table> list;
+    private TablesRecyclerAdapter tablesRecyclerAdapter;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -59,9 +63,9 @@ public class TablesFragment extends Fragment implements TablesPresenter.View {
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), linearLayoutManager.getOrientation());
         recyclerView.addItemDecoration(dividerItemDecoration);
         Type listType = new TypeToken<List<Table>>() {}.getType();
-        final List<Table> list = new Gson().fromJson(sampleJson, listType);
+        list = new Gson().fromJson(sampleJson, listType);
         Collections.sort(list, mapComparator);
-        final TablesRecyclerAdapter tablesRecyclerAdapter = new TablesRecyclerAdapter(list, this);
+        tablesRecyclerAdapter = new TablesRecyclerAdapter(list, this);
         recyclerView.setAdapter(tablesRecyclerAdapter);
         imgAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -188,5 +192,28 @@ public class TablesFragment extends Fragment implements TablesPresenter.View {
             btnDelete.setVisibility(View.GONE);
         }
         toolbar_title.setText(getString(R.string.selected, selectedItemCount));
+    }
+
+    @Override
+    public void gotoTableDetails(int position) {
+        Intent intent = new Intent(getContext(), TablesDetailsActivity.class);
+        intent.putExtra("position", position);
+        intent.putExtra("data", list.get(position));
+        startActivityForResult(intent, REQUEST_CODE_EDIT);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == Activity.RESULT_OK && REQUEST_CODE_EDIT == requestCode && data != null) {
+            int position = data.getIntExtra("position", -1);
+            String text = data.getStringExtra("data");
+            if(!TextUtils.isEmpty(text)) {
+                list.get(position).setName(text);
+            } else {
+                list.remove(position);
+            }
+            tablesRecyclerAdapter.customNotifyDataSetChanged(list);
+        }
     }
 }
